@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spooky Reptile Cursor</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: url("ghost.jpg") no-repeat center center fixed;
+      background-size: cover;
+      cursor: none;
+    }
+
+    .trail {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0, 255, 0, 0.3);
+      box-shadow: 0 0 8px 4px limegreen;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .ghost {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: url('https://cdn-icons-png.flaticon.com/512/7890/7890439.png') no-repeat center;
+      background-size: contain;
+      animation: float 6s ease-in-out infinite;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+
+    #playBtn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.6);
+      color: #00ffcc;
+      padding: 10px 20px;
+      font-family: sans-serif;
+      border: 2px solid #00ffcc;
+      border-radius: 8px;
+      z-index: 10000;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<button id="playBtn">🔊 Play Music</button>
+
+<audio id="bgMusic" loop>
+  <source src="background-music.mp3" type="audio/mpeg">
+  Your browser does not support the audio tag.
+</audio>
+
+<script>
+  // MUSIC PLAY BUTTON
+  document.getElementById("playBtn").addEventListener("click", function () {
+    const music = document.getElementById("bgMusic");
+    music.volume = 0.4; // not too loud
+    music.play();
+    this.style.display = 'none'; // hide button after playing
+  });
+
+  // CURSOR TRAIL
+  const trailCount = 25;
+  const trails = [];
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+
+  for (let i = 0; i < trailCount; i++) {
+    const div = document.createElement("div");
+    div.classList.add("trail");
+    document.body.appendChild(div);
+    trails.push({ element: div, x: 0, y: 0 });
+  }
+
+  document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function animate() {
+    trails.forEach((trail, index) => {
+      const next = trails[index - 1] || { x: mouseX, y: mouseY };
+      trail.x += (next.x - trail.x) * 0.3;
+      trail.y += (next.y - trail.y) * 0.3;
+
+      trail.element.style.transform = `translate(${trail.x}px, ${trail.y}px) scale(${1 - index * 0.03})`;
+      trail.element.style.opacity = `${1 - index * 0.04}`;
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  // Floating Ghosts
+  const ghostCount = 5;
+  for (let i = 0; i < ghostCount; i++) {
+    const ghost = document.createElement('div');
+    ghost.classList.add('ghost');
+    ghost.style.left = `${Math.random() * window.innerWidth}px`;
+    ghost.style.top = `${Math.random() * window.innerHeight}px`;
+    document.body.appendChild(ghost);
+  }
+</script>
+
+</body>
+</html>
